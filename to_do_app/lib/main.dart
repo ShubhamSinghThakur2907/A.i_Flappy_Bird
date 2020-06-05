@@ -36,21 +36,46 @@ class _MyHomePageState extends State<MyHomePage> {
     return MaterialApp(
       color: Colors.yellow,
       home: SafeArea(
-        child : DefaultTabController(
+            child : DefaultTabController(
         length: 3,
         child: new Scaffold(
-          body: TabBarView(
-            children: [
+          body: Stack(
+            children: <Widget>[
+                TabBarView(
+                  children: [
               new Container(
                 color: Colors.yellow,
               ),
-              new Container(color: Colors.orange,),
+              new Container(
+                color: Colors.orange,
+                ),
               
               new Container(
                 color: Colors.red,
               ),
+                  ],
+               ),
+            
+          Container(
+            padding: EdgeInsets.only(left: 50),
+            height: 160,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(50),
+                bottomRight: Radius.circular(50) ), 
+                color: Colors.white, 
+            ),
+            child:Row (
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text("Intray"), 
+                Container()
+              ],),
+            ),
+             
             ],
-          ),
+
+             ),
           appBar: new TabBar(
             tabs: [
               
@@ -62,12 +87,11 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               Tab(icon: new Icon(Icons.settings),)
             ],
-            labelColor: Colors.yellow,
-            unselectedLabelColor: Colors.blue,
+            labelColor: Colors.pink[200],
+            unselectedLabelColor: Colors.grey,
             indicatorSize: TabBarIndicatorSize.label,
             indicatorPadding: EdgeInsets.all(5.0),
-            indicatorColor: Colors.red,
-          ),
+            indicatorColor: Colors.pink ,         ),
           backgroundColor: Colors.white,
         ),
       ),
