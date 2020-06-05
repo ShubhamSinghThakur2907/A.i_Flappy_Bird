@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'models/global.dart'  ;
 
 void main() => runApp(MyApp());
 
@@ -44,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 TabBarView(
                   children: [
               new Container(
-                color: Colors.yellow,
+                color: darkGreyColor,
               ),
               new Container(
                 color: Colors.orange,
@@ -68,11 +69,20 @@ class _MyHomePageState extends State<MyHomePage> {
             child:Row (
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Text("Intray"), 
+                Text("Intray", style: intrayTitleStyle), 
                 Container()
               ],),
             ),
-             
+            Container(
+              height: 80 ,
+              width: 80 ,
+              margin: EdgeInsets.only(top: 120 , left: MediaQuery.of(context).size.width*0.5 -40 ),
+            child: FloatingActionButton(
+              child: Icon(Icons.add, size: 50,),
+              backgroundColor: Colors.red,
+
+              onPressed: null)
+            )
             ],
 
              ),
