@@ -4,7 +4,7 @@ import time
 import os 
 import random
 
-WIN_WIDTH = 600 
+WIN_WIDTH = 500 
 WIN_HEIGHT = 800   #CAPITAL HENCE CONSTANT 
 
 BIRD_IMGS = [pygame.transform.scale2x(pygame.image.load(os.path.join("all_assets", "icon", "bluebird-upflap.png"))),pygame.transform.scale2x(pygame.image.load(os.path.join("all_assets", "icon", "bluebird-midflap.png"))),pygame.transform.scale2x(pygame.image.load(os.path.join("all_assets", "icon", "bluebird-downflap.png")))]
@@ -16,7 +16,7 @@ BASE_IMG = pygame.transform.scale2x(pygame.image.load(os.path.join("all_assets",
 BG_IMG = pygame.transform.scale2x(pygame.image.load(os.path.join("all_assets", "icon", "background-night.png")))
 
 
-class bird:
+class Bird:
     """
     IMGS : images of the flappy bird 
     MAX_ROTATION : maximum rotation that flappy bird can take (tilt)
@@ -32,10 +32,11 @@ class bird:
         self.x = x 
         self.y = y 
         self.tilt = 0 
-        self.vol = 0 
+        self.vel = 0 
         self.height = self.y 
         self.img_count = 0 
         self.img = self.IMGS[0]
+        self.tick_count = 0
     
     def jump(self):
         self.vel = -10.5
@@ -55,7 +56,7 @@ class bird:
 
         self.y = self.y + 4 
 
-        if d< 0 or self.y = self.height + 50:
+        if d< 0 or self.y < self.height + 50:
             if self.tilt < self.MAX_ROTATION:
                 self.tilt = self.MAX_ROTATION
             else:
@@ -92,8 +93,36 @@ class bird:
         # tilt the bird
         blitRotateCenter(win, self.img, (self.x, self.y), self.tilt)
 
-        
+    def get_mask(self):
+        return pygame,mask.from_surface(self.img)
 
-while True:
-    bird.move()
+def draw_window(win, bird):
+    win.blit(BG_IMG,(0,0))
+    bird.draw(win)
+    pygame.display.update()
 
+def blitRotateCenter(surf, image, topleft, angle):
+
+    rotated_image = pygame.transform.rotate(image, angle)
+    new_rect = rotated_image.get_rect(center = image.get_rect(topleft = topleft).center)
+
+    surf.blit(rotated_image, new_rect.topleft)
+
+def main():
+    bird = Bird(200, 200)
+    win = pygame.display.set_mode((WIN_WIDTH,WIN_HEIGHT))
+    clock = pygame.time.Clock()
+
+    run = True 
+    while run:
+        clock.tick(120)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+        bird.move()
+        draw_window(win, bird)
+
+    pygame.quit()
+    quit()
+
+main()
