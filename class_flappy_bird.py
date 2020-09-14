@@ -98,6 +98,10 @@ class Bird:
 
 
 class Pipe:
+    '''
+    property of the pipe how it should behave 
+
+    '''
     GAP = 200 
     VEL = 5 
 
@@ -140,6 +144,9 @@ class Pipe:
         return False
 
 class Base:
+    '''
+    property of the base class
+    '''
     VEL = 5 
     WIDTH = BASE_IMG.get_width()
     IMG = BASE_IMG 
