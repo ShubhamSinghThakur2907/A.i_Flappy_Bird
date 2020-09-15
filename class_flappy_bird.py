@@ -1,19 +1,30 @@
 import pygame 
+from pygame.locals import  * 
+
 import neat 
 import time 
 import os 
+import sys 
 import random
+import pickle
+pygame.font.init() 
 
 WIN_WIDTH = 500 
 WIN_HEIGHT = 800   #CAPITAL HENCE CONSTANT 
+FLOOR = 730
+STAT_FONT = pygame.font.SysFont("comicsans", 50)
+END_FONT = pygame.font.SysFont("comicsans", 70)
+DRAW_LINES = False
+
+WIN = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
+pygame.display.set_caption("Flappy Bird")
+
 
 BIRD_IMGS = [pygame.transform.scale2x(pygame.image.load(os.path.join("all_assets", "icon", "bluebird-upflap.png"))),pygame.transform.scale2x(pygame.image.load(os.path.join("all_assets", "icon", "bluebird-midflap.png"))),pygame.transform.scale2x(pygame.image.load(os.path.join("all_assets", "icon", "bluebird-downflap.png")))]
-
 PIPE_IMG = pygame.transform.scale2x(pygame.image.load(os.path.join("all_assets", "icon", "pipe-red.png")))
-
 BASE_IMG = pygame.transform.scale2x(pygame.image.load(os.path.join("all_assets", "icon", "base.png")))
-
 BG_IMG = pygame.transform.scale2x(pygame.image.load(os.path.join("all_assets", "icon", "background-night.png")))
+
 
 
 class Bird:
@@ -94,7 +105,7 @@ class Bird:
         blitRotateCenter(win, self.img, (self.x, self.y), self.tilt)
 
     def get_mask(self):
-        return pygame,mask.from_surface(self.img)
+        return pygame.mask.from_surface(self.img)
 
 
 class Pipe:
@@ -108,7 +119,8 @@ class Pipe:
     def __init__(self,x):
         self.x = x 
         self.height = 0 
-        self.gap = 100
+
+        #self.gap = 100
         
         self.top = 0 
         self.bottom = 0 
@@ -130,15 +142,17 @@ class Pipe:
         win.blit(self.PIPE_TOP, (self.x, self.top))
         win.blit(self.PIPE_BOTTOM,(self.x, self.bottom))
 
-    def collide(self, bird):
-        bird_mask = bird.get_msk()
+    def collide(self, bird, win):
+        bird_mask = bird.get_mask()
         top_mask = pygame.mask.from_surface(self.PIPE_TOP)
-        buttom_mask = pygame.mask.from_surface(self.PIPE_BOTTOM)
+        bottom_mask = pygame.mask.from_surface(self.PIPE_BOTTOM)
+        top_offset = (self.x - bird.x, self.top - round(bird.y))
+        bottom_offset = (self.x - bird.x, self.bottom - round(bird.y))
 
         b_point = bird_mask.overlap(bottom_mask, bottom_offset)
         t_point = bird_mask.overlap(top_mask, top_offset)
         
-        if t_point or b_point:
+        if b_point or t_point:
             return True
         
         return False
@@ -171,12 +185,7 @@ class Base:
         win.blit(self.IMG, (self.x2, self.y))
 
 
-def draw_window(win, bird,pipes,  base):
-    win.blit(BG_IMG,(0,0))
-    for  pipe in pipes:
-        pipe.draw(win)
-    bird.draw(win)
-    pygame.display.update()
+
 
 def blitRotateCenter(surf, image, topleft, angle):
 
