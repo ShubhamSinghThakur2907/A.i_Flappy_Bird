@@ -8,6 +8,11 @@ pygame.font.init()
 
 WIN_WIDTH =  580 
 WIN_HEIGHT = 800 
+DRAW_LINES = False
+
+
+WIN = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
+pygame.display.set_caption("Flappy Bird")
 #loading assets
 
 BIRD_IMGS = [pygame.transform.scale2x(pygame.image.load(os.path.join("all_assets","icon","bird1.png"))),pygame.transform.scale2x(pygame.image.load(os.path.join("all_assets","icon","bird2.png"))),pygame.transform.scale2x(pygame.image.load(os.path.join("all_assets","icon","bird3.png")))]
@@ -87,9 +92,8 @@ class Bird:
             self.img = self.IMGS[1]
             self.img_count =  self.ANIMATION_TIME*2 
         
-        rotated_image = pygame.transform.rotate(self.img, self.tilt)
-        new_rect = rotated_image.get_rect(center = self.img.get_rect(topleft= (self.x,self.y)).center)
-        win.blit(rotated_image, new_rect.topleft)
+        # tilt the bird
+        blitRotateCenter(win, self.img, (self.x, self.y), self.tilt)
 
     def get_mask(self):
         return pygame.mask.from_surface(self.img)
@@ -102,7 +106,6 @@ class Pipe:
     def __init__(self, x):
         self.x = x 
         self.height = 0
-        self.gap = 0 
 
         self.top = 0 
         self.bottom = 0 
@@ -166,10 +169,20 @@ class Base:
         win.blit(self.IMG, (self.x2, self.y))
 
 
-def draw_window(win, birds, pipes, base,score ):
+def blitRotateCenter(surf, image, topleft, angle):
+    """
+    Rotate a surfacae and blit it to the  window  
+    """
+    rotated_image = pygame.transform.rotate(image, angle)
+    new_rect = rotated_image.get_rect(center = image.get_rect(topleft = topleft).center)
+
+    surf.blit(rotated_image, new_rect.topleft)
+
+
+def draw_window(win, birds, pipes, base,score,gen,pipe_ind ):
     if gen == 0:
         gen = 1
-    win.blit(bg_img, (0,0))
+    
     win.blit(BG_IMG,(0,0))
 
     for pipe in pipes:
@@ -180,11 +193,23 @@ def draw_window(win, birds, pipes, base,score ):
 
     base.draw(win)
     for bird in birds:
+        # draw lines from bird to pipe
+        if DRAW_LINES:
+            try:
+                pygame.draw.line(win, (255,0,0), (bird.x+bird.img.get_width()/2, bird.y + bird.img.get_height()/2), (pipes[pipe_ind].x + pipes[pipe_ind].PIPE_TOP.get_width()/2, pipes[pipe_ind].height), 5)
+                pygame.draw.line(win, (255,0,0), (bird.x+bird.img.get_width()/2, bird.y + bird.img.get_height()/2), (pipes[pipe_ind].x + pipes[pipe_ind].PIPE_BOTTOM.get_width()/2, pipes[pipe_ind].bottom), 5)
+            except:
+                pass
+        # draw bird
         bird.draw(win)
+
     pygame.display.update()
 
 
 def main(genomes, config):
+    
+    global WIN, gen
+    win = WIN 
     nets = []
     ge = []
     birds = []
@@ -202,6 +227,7 @@ def main(genomes, config):
     pipes = [Pipe(700)]
 
     clock = pygame.time.Clock()
+    pygame.init()
     score = 0
 
     run = True
@@ -270,12 +296,14 @@ def main(genomes, config):
                 
 
         #base.move()    
-        draw_window(win, birds,pipes,base, score)
+        draw_window(WIN, birds,pipes,base, score, gen, pipe_ind)
 
 
 
 def run(config_path):
-    config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet, neat.DefaultStagnation, config_path)
+    config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction,
+                                 neat.DefaultSpeciesSet, neat.DefaultStagnation,
+                                  config_path)
     
     p = neat.Population(config)
 
